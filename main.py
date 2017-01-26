@@ -67,9 +67,19 @@ class MainHandler(webapp2.RequestHandler):
     def post(self):
         user_name = self.request.get("username")
         email_addy = self.request.get("email")
-        self.write_form(user_name,email_addy)
+        if user_name:
+            self.redirect("/welcome?username=" + user_name)
+        else:
+            self.write_form(user_name,email_addy)
+
+class WelcomeHandler(webapp2.RequestHandler):
+    def get(self):
+        user_name = self.request.get('username')
+        welcome_msg = "Welcome, " + user_name + "!"
+        self.response.out.write(welcome_msg)
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/welcome', WelcomeHandler)
 ], debug=True)
