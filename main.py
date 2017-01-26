@@ -16,8 +16,6 @@
 #
 
 # QUESTIONS:
-# Can form action be changed? If form isn't valid, we want to stay on page, if
-#       it is valid, we want to go to another page.
 # Can python variable names match html element names?
 # Why didn't /w work in character class for re.compile for username?
 
@@ -29,6 +27,21 @@ page_header = """
 <html>
     <head>
         <title>Signup Form</title>
+        <style>
+            html {
+                font-family:sans-serif;
+            }
+            div {
+                font-size:.25em;
+            }
+            .error {
+                color:red;
+                font-weight:bold;
+            }
+            p {
+                font-size:2em;
+            }
+        </style>
     </head>
     <body>
 """
@@ -41,26 +54,26 @@ page_footer = """
 signup_form = """
 <h1>Sign Up!</h1>
 <form method = "post" action="/" name="signup-form">
-    <label>Username
-        <input name="username" value="%(user_name)s"/> &#8198; <label>%(username_msg)s</label>
+    <label>Username:
+        <input name="username" value="%(user_name)s"/> &#8198; <label class="error">%(username_msg)s</label>
     </label>
-    <br>
-    <label>Password
-        <input name="password"/> &#8198; <label>%(password_msg)s</label>
+    <div><br></div>
+    <label>Password:
+        <input name="password"/> &#8198; <label class="error">%(password_msg)s</label>
     </label>
-    <br>
-    <label>Verify Password
-        <input name="verify"/> &#8198; <label>%(verify_msg)s</label>
+    <div><br></div>
+    <label>Verify Password:
+        <input name="verify"/> &#8198; <label class="error">%(verify_msg)s</label>
     </label>
-    <br>
-    <label>Email (optional)
-        <input name="email" value="%(email_addy)s"/> &#8198; <label>%(email_msg)s</label>
+    <div><br></div>
+    <label>Email (optional):
+        <input name="email" value="%(email_addy)s"/> &#8198; <label class="error">%(email_msg)s</label>
     </label>
-    <br>
+    <div><br></div>
     <button type="submit">Submit</button>
 </form>
 """
-content = page_header + signup_form + page_footer
+signup_content = page_header + signup_form + page_footer
 
 
 # re (regex) module usage notes: to avoid issues with both
@@ -89,11 +102,14 @@ def validity_check(username, password, verify, email):
     #error_msg = "<style color=red><b>%s</b></style>"
     error_flag = False
     username_msg = password_msg = verify_msg = email_msg = ""
-    if not is_valid_username(username):
-        username_msg = "Please provide a valid username"
+    if len(username) == 0:
+        username_msg = "Please enter a username"
+        error_flag = True
+    elif not is_valid_username(username):
+        username_msg = "Please enter a valid username"
         error_flag = True
     if not is_valid_password(password):
-        password_msg = "Please provide a valid password"
+        password_msg = "Please enter a valid password"
         error_flag = True
     if password != verify:
         verify_msg = "Verify Password does not match Password"
@@ -108,7 +124,7 @@ def validity_check(username, password, verify, email):
 class MainHandler(webapp2.RequestHandler):
     def write_form(self, user_name="", email_addy="", username_msg="",
                     password_msg="", verify_msg="", email_msg=""):
-        self.response.out.write(content % {"user_name":user_name,
+        self.response.out.write(signup_content % {"user_name":user_name,
                                            "email_addy":email_addy,
                                            "username_msg":username_msg,
                                            "password_msg":password_msg,
@@ -133,8 +149,9 @@ class MainHandler(webapp2.RequestHandler):
 class WelcomeHandler(webapp2.RequestHandler):
     def get(self):
         user_name = self.request.get('username')
-        welcome_msg = "Welcome, " + user_name + "!"
-        self.response.out.write(welcome_msg)
+        welcome_msg = "<p>Welcome, %(username)s!</p>" % {"username":user_name}
+        welcome_content = page_header + welcome_msg + page_footer
+        self.response.out.write(welcome_content)
 
 
 app = webapp2.WSGIApplication([
