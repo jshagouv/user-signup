@@ -55,15 +55,15 @@ signup_form = """
 <h1>Sign Up!</h1>
 <form method = "post" action="/" name="signup-form">
     <label>Username:
-        <input name="username" value="%(user_name)s"/> &#8198; <label class="error">%(username_msg)s</label>
+        <input name="username" value="%(user_name)s" type="text"/> &#8198; <label class="error">%(username_msg)s</label>
     </label>
     <div><br></div>
     <label>Password:
-        <input name="password"/> &#8198; <label class="error">%(password_msg)s</label>
+        <input name="password" type="password"/> &#8198; <label class="error">%(password_msg)s</label>
     </label>
     <div><br></div>
     <label>Verify Password:
-        <input name="verify"/> &#8198; <label class="error">%(verify_msg)s</label>
+        <input name="verify" type="password"/> &#8198; <label class="error">%(verify_msg)s</label>
     </label>
     <div><br></div>
     <label>Email (optional):
